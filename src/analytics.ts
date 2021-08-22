@@ -1,9 +1,7 @@
 import LogRocket from 'logrocket'
-import api from './api'
-import { GOOGLE_ANALYTICS_KEY, LOG_ROCKET_APP } from './config'
 
 function initLogRocket () {
-  LogRocket.init(LOG_ROCKET_APP)
+  LogRocket.init(process.env.LOG_ROCKET_APP || '')
 }
 
 declare global {
@@ -22,7 +20,7 @@ function initGA () {
   // @ts-ignore
   gtag('js', new Date())
   // @ts-ignore
-  gtag('config', GOOGLE_ANALYTICS_KEY)
+  gtag('config', process.env.GOOGLE_ANALYTICS_KEY)
 }
 
 export function initAnalytics () {
@@ -31,8 +29,8 @@ export function initAnalytics () {
 }
 
 export async function identifyUser () {
-  const { id, display_name } = await api.getUserInfo()
-  LogRocket.identify(id, {
-    name: display_name || 'unknown'
-  })
+  // const { id, display_name } = await api.getUserInfo()
+  // LogRocket.identify(id, {
+  //   name: display_name || 'unknown'
+  // })
 }

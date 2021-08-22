@@ -1,31 +1,29 @@
 import Vue from 'vue'
-import VueRouter, { RouteConfig, Route, NavigationGuardNext } from 'vue-router'
-import Music from '@/views/Music.vue'
+import VueRouter, { RouteConfig } from 'vue-router'
+import Browse from '../views/Browse.vue'
 
 Vue.use(VueRouter)
 
 const routes: Array<RouteConfig> = [
   {
     path: '/',
-    name: 'Music',
-    component: Music
+    name: 'browse',
+    component: Browse
   },
   {
-    path: '/about',
-    name: 'About',
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    path: '/checkout',
+    name: 'checkout',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Checkout.vue')
   },
   {
-    path: '/code-redirect',
-    name: 'codeRedirect',
-    async beforeEnter (to, from, next) {
-      next({
-        name: 'Music',
-        replace: true
-      })
-    }
+    path: '/confirmation',
+    name: 'confirmation',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Confirmation.vue')
+  },
+  {
+    path: '*',
+    redirect: '/'
   }
-  // TODO: WILDCARD ROUTE?
 ]
 
 const router = new VueRouter({

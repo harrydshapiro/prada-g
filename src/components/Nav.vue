@@ -1,88 +1,64 @@
 <template>
-  <div class="nav">
-    <div v-if="currentRouteName !== 'About'" class="about-toggle" @click="showAboutScreen">
-      ?
+  <div id="nav">
+    <div>
+      <router-link v-if="currentRouteName !== 'browse'" to="/">
+        &lt;
+      </router-link>
     </div>
-    <div v-if="currentRouteName !== 'Music'" class="music-toggle" @click="showMusicScreen">
-      music
+
+    <div id="site-title">
+      <router-link to="/">
+        <h1>PRADA G</h1>
+      </router-link>
     </div>
-    <!-- <div class="play-pause-toggle" @click="toggleAudioPlayback">
-      {{ playerPaused ? 'play' : 'pause' }}
+
+    <div>
+      <router-link v-if="currentRouteName === 'browse'" to="/checkout">
+        🛒
+      </router-link>
     </div>
-    <div class="shuffle-toggle" @click="toggleShuffle">
-      {{ shuffled ? 'by\nartist' : 'shuffle' }}
-    </div> -->
   </div>
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator'
-import store, { AlbumSortMethod } from '@/store'
-import router from '@/router'
+import { Vue, Component } from 'vue-property-decorator'
 
 @Component({})
 export default class Nav extends Vue {
-  showAboutScreen () {
-    this.$router.push({
-      name: 'About'
-    })
-  }
-
-  showMusicScreen () {
-    this.$router.push({
-      name: 'Music'
-    })
-  }
-
-  toggleAudioPlayback () {
-    const currentUri = store.state.currentPlayerURI
-    const uriToPlay = currentUri || store.getters.albumsAndPlaylistsInView[0]?.uri
-    if (!uriToPlay) return
-    store.dispatch.togglePlayState(uriToPlay)
-  }
-
-  toggleShuffle () {
-    if (store.state.albumSortMethod === AlbumSortMethod.Random) {
-      store.dispatch.changeAlbumSorting(AlbumSortMethod.ArtistName)
-    } else {
-      store.dispatch.changeAlbumSorting(AlbumSortMethod.Random)
-    }
-  }
-
   get currentRouteName () {
     return this.$route.name
-  }
-
-  get playerPaused () {
-    return store.state.playerPaused
-  }
-
-  get shuffled () {
-    return store.state.albumSortMethod === AlbumSortMethod.Random
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.nav {
+#nav {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  color: white;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 1;
   display: flex;
   justify-content: space-between;
-  z-index: 10;
+  padding: 1em 1em 0.5em;
+  box-sizing: border-box;
+  text-align: center;
+  background: white;
 
   > * {
     flex: 1;
-    margin: 0 40px 0 0;
-    cursor: pointer;
-    text-align: center;
-    white-space: nowrap;
+
+    &:nth-child(1) {
+      text-align: left;
+    }
+
+    &:nth-child(3) {
+      text-align: right;
+    }
   }
 
-  > *:last-child {
-    margin-right: 0;
+  #site-title {
+    white-space: nowrap;
   }
 }
 </style>

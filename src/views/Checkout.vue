@@ -109,8 +109,10 @@ export default class Checkout extends Vue {
           customerDetails,
           cart: this.cart
         })
-        // show confirmation screen
+        store.dispatch.clearCart()
+        this.$router.push('/confirmation')
       } catch (err) {
+        window.alert('There was an error that prevented us from processing this. Sorry! Please reach out to team@e-mom.energy if u want :(')
         console.error(err)
         // if theres an error ask them to just hmu about it
       }
@@ -169,6 +171,7 @@ export default class Checkout extends Vue {
       color: white;
       border-radius: 2px;
       margin: 2em 0 0 auto;
+      cursor: pointer;
     }
   }
 }

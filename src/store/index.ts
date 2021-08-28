@@ -72,6 +72,10 @@ const {
       const cart = state.cart
       const newCart = Array.from(cart).filter(p => p.id !== product.id)
       commit.setCart(newCart)
+    },
+    clearCart (context) {
+      const { commit } = rootActionContext(context)
+      commit.setCart([])
     }
   },
   getters: {

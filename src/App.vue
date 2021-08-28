@@ -18,7 +18,7 @@ export default class App extends Vue {
 }
 </script>
 
-<style>
+<style lang="scss">
 @font-face {
   src: url('~@/assets/microgramma.ttf');
   font-family:'Microgramma'
@@ -51,7 +51,7 @@ div, p, label, input {
 #app {
   display: flex;
   justify-content: center;
-  padding-top: 5em;
+  padding-top: 7.5em;
 }
 
 svg, svg:focus {
@@ -61,5 +61,16 @@ svg, svg:focus {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+input {
+  border: none;
+  border-bottom: 1px solid black;
+  padding: 0;
+  font-size: 1em;
+
+  &:focus-visible {
+    outline: none;
+  }
 }
 </style>

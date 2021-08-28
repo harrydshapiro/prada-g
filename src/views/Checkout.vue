@@ -4,6 +4,10 @@
       No items in cart
     </div>
     <div v-else>
+      <p class="section-header">
+        🛒 Cart
+      </p>
+      <br>
       <!-- products in cart -->
       <div v-for="(product, index) in cart" :key="index" class="product">
         <p class="product-name">
@@ -19,22 +23,29 @@
 
       <!-- customer details -->
       <form id="customer-details" @submit="submit">
-        <label for="customer-name">What's your name?</label>
+        <p class="section-header">
+          contact
+        </p>
+        <label :class="{ error: invalidCustomerDetails.includes('customer-name') }" for="customer-name">What's your name?</label>
         <input id="customer-name" name="customer-name" type="text">
-        <label for="customer-email">What's your email?</label>
+        <label :class="{ error: invalidCustomerDetails.includes('customer-email') }" for="customer-email">What's your email?</label>
         <input id="customer-email" name="customer-email" type="text">
-        <p>shipping:</p>
-        <p>ideally meet up with me in nyc :)</p>
-        <p>if not, fill this out</p>
-        <label for="street-one">Street 1</label>
+        <br>
+
+        <p class="section-header">
+          shipping:
+        </p>
+        <p>ideally hmu to meet up in nyc :)<br>if not, please fill this out</p>
+        <br>
+        <label :class="{ error: invalidCustomerDetails.includes('street-one') }" for="street-one">Street 1</label>
         <input id="street-one" name="street-one" type="text">
         <label for="street-two">Street 2</label>
         <input id="street-two" name="street-two" type="text">
-        <label for="city">City</label>
+        <label :class="{ error: invalidCustomerDetails.includes('city') }" for="city">City</label>
         <input id="city" name="city" type="text">
-        <label for="state">State</label>
+        <label :class="{ error: invalidCustomerDetails.includes('state') }" for="state">State</label>
         <input id="state" name="state" type="text">
-        <label for="zip">Zip</label>
+        <label :class="{ error: invalidCustomerDetails.includes('zip') }" for="zip">Zip</label>
         <input id="zip" name="zip" type="number">
         <input type="submit">
       </form>
@@ -45,33 +56,42 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 import store from '@/store'
+import axios from 'axios'
 
 @Component({})
 export default class Checkout extends Vue {
+  invalidCustomerDetails: string[] = []
+
   get cart () {
     return store.state.cart
   }
 
-  invalidCustomerDetails (customerDetails: Record<string, string>): string[] {
+  setInvalidCustomerDetails (customerDetails: Record<string, string>) {
     const invalidKeys = []
 
-    for (const key in customerDetails) {
-      const value = customerDetails[key]
-
-      const unrequiredFields = ['street-two']
-      if (
-        (!unrequiredFields.includes(key) && !value) ||
-        (key === 'zip' && value.length !== 5) ||
-        (key === 'customer-email' && !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value)))
-      ) {
-        invalidKeys.push(key)
-      }
+    if (!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(customerDetails['customer-email']))) {
+      invalidKeys.push('customer-email')
     }
 
-    return invalidKeys
+    if (!customerDetails['customer-name']) invalidKeys.push('customer-name')
+
+    const shippingFormAtLeastPartial =
+      customerDetails['street-one'] || customerDetails['street-two'] || customerDetails.city || customerDetails.state || customerDetails.zip
+
+    if (shippingFormAtLeastPartial) {
+      if (customerDetails.zip.length !== 5) {
+        invalidKeys.push('zip')
+      }
+      if (!customerDetails['street-one']) invalidKeys.push('street-one')
+      if (!customerDetails.city) invalidKeys.push('city')
+      if (!customerDetails.state) invalidKeys.push('state')
+      if (!customerDetails.zip) invalidKeys.push('zip')
+    }
+
+    this.invalidCustomerDetails = invalidKeys
   }
 
-  submit (submissionEvent: any) {
+  async submit (submissionEvent: any) {
     submissionEvent.preventDefault()
     const formData = new FormData(submissionEvent.target)
     const customerDetails = [...formData.entries()]
@@ -80,15 +100,20 @@ export default class Checkout extends Vue {
         return all
       }, {})
 
-    const invalidDetails = this.invalidCustomerDetails(customerDetails)
+    this.setInvalidCustomerDetails(customerDetails)
 
-    if (invalidDetails.length > 0) {
-      // send the form submission
-      // show confirmation screen
-      console.log('invalid keys', invalidDetails)
-    } else {
-      // show invalid message
-      console.log('everything is valid')
+    if (this.invalidCustomerDetails.length === 0) {
+      // await sending the email!
+      try {
+        await axios.post('http://localhost:3000/checkout', {
+          customerDetails,
+          cart: this.cart
+        })
+        // show confirmation screen
+      } catch (err) {
+        console.error(err)
+        // if theres an error ask them to just hmu about it
+      }
     }
   }
 }
@@ -96,9 +121,11 @@ export default class Checkout extends Vue {
 
 <style lang="scss" scoped>
 #checkout {
-  padding: 0 2em;
+  padding: 0 2em 5em;
 
   .product {
+    margin-bottom: 2em;
+
     .product-name {
       font-weight: 600;
       margin-bottom: 1em;
@@ -117,10 +144,32 @@ export default class Checkout extends Vue {
       }
     }
   }
-}
 
-form#customer-details {
-  display: flex;
-  flex-direction: column;
+  .section-header {
+    font-weight: 600;
+  }
+
+  form#customer-details {
+    display: flex;
+    flex-direction: column;
+
+    label.error {
+      color: red;
+    }
+
+    input {
+      margin-bottom: 0.5em;
+    }
+
+    input[type=submit] {
+      background: black;
+      border: none;
+      padding: 5px 25px;
+      width: fit-content;
+      color: white;
+      border-radius: 2px;
+      margin: 2em 0 0 auto;
+    }
+  }
 }
 </style>

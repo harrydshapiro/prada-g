@@ -105,7 +105,7 @@ export default class Checkout extends Vue {
     if (this.invalidCustomerDetails.length === 0) {
       // await sending the email!
       try {
-        await axios.post('http://localhost:3000/checkout', {
+        await axios.post(process.env.VUE_APP_API_URL + 'checkout', {
           customerDetails,
           cart: this.cart
         })

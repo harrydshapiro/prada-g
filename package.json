@@ -7,7 +7,7 @@
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
-    "start": "node server.js"
+    "start": "nodemon server.js"
   },
   "dependencies": {
     "@sendgrid/mail": "^7.4.6",
@@ -24,6 +24,7 @@
     "hotkeys-js": "^3.8.1",
     "lodash-es": "^4.17.15",
     "logrocket": "^1.0.14",
+    "nodemon": "^2.0.12",
     "sass": "^1.29.0",
     "sass-loader": "^10.1.0",
     "serve-static": "^1.14.1",

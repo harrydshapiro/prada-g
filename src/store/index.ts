@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { createDirectStore } from 'direct-vuex'
-import products from '@/products.json'
+import products from '@/products'
 
 export interface Product {
   price: number,
@@ -17,7 +17,7 @@ export interface CartItem {
 }
 
 export interface Cart {
-  [productId: Product['id']]: CartItem
+  [productId: string]: CartItem
 }
 
 export interface RootState {
@@ -75,7 +75,6 @@ const {
         newCart[productId].count++
       } else {
         newCart[productId] = {
-          // @ts-ignore
           product: products[productId],
           count: 1
         }

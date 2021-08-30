@@ -19,7 +19,6 @@ export default class ProductTile extends Vue {
   @Prop({ required: true }) product!: Product
 
   get isInCart () {
-    // @ts-ignore
     return !!store.state.cart[this.product.id]
   }
 

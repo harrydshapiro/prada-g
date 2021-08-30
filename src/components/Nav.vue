@@ -15,7 +15,7 @@
 
       <div>
         <router-link v-if="currentRouteName === 'browse'" to="/checkout">
-          🛒
+          <p><span v-if="cartSize > 0">({{ cartSize }})</span> 🛒</p>
         </router-link>
       </div>
     </div>
@@ -27,11 +27,16 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
+import store from '@/store'
 
 @Component({})
 export default class Nav extends Vue {
   get currentRouteName () {
     return this.$route.name
+  }
+
+  get cartSize () {
+    return Object.keys(store.state.cart).length
   }
 }
 </script>

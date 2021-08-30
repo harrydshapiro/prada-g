@@ -1,6 +1,6 @@
 <template>
   <div id="checkout">
-    <div v-if="cart.length === 0">
+    <div v-if="cartItems.length === 0">
       No items in cart
     </div>
     <div v-else>
@@ -9,14 +9,29 @@
       </p>
       <br>
       <!-- products in cart -->
-      <div v-for="(product, index) in cart" :key="index" class="product">
+      <div v-for="(cartItem, index) in cartItems" :key="index" class="product">
         <p class="product-name">
-          {{ product.name }}
+          {{ cartItem.product.name }}
         </p>
         <div class="product-details">
-          <img class="product-image" :src="product.image" />
-          <div class="price-explanation">
-            {{ product['price-explanation'] }}
+          <img class="product-image" :src="cartItem.product.image" />
+          <div class="right-content">
+            <div class="price-explanation">
+              {{ cartItem.product['price-explanation'] }}
+            </div>
+            <div class="count-container">
+              <p class="current-count">
+                x{{ cartItem.count }}
+              </p>
+              <div class="toggles">
+                <p class="add" @click="() => addToCart(cartItem.product.id)">
+                  +
+                </p>
+                <p class="remove" @click="() => removeFromCart(cartItem.product.id)">
+                  —
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -55,15 +70,24 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import store from '@/store'
+import store, { CartItem } from '@/store'
 import axios from 'axios'
 
 @Component({})
 export default class Checkout extends Vue {
   invalidCustomerDetails: string[] = []
 
-  get cart () {
-    return store.state.cart
+  addToCart (productId: string) {
+    store.dispatch.addToCart(productId)
+  }
+
+  removeFromCart (productId: string) {
+    store.dispatch.removeFromCart(productId)
+  }
+
+  get cartItems () {
+    const cartItems: CartItem[] = Object.values(store.state.cart)
+    return cartItems
   }
 
   setInvalidCustomerDetails (customerDetails: Record<string, string>) {
@@ -107,7 +131,7 @@ export default class Checkout extends Vue {
       try {
         await axios.post(process.env.VUE_APP_API_URL + 'checkout', {
           customerDetails,
-          cart: this.cart
+          cart: store.state.cart
         })
         store.dispatch.clearCart()
         this.$router.push('/confirmation')
@@ -143,6 +167,24 @@ export default class Checkout extends Vue {
         flex-shrink: 0;
         object-fit: cover;
         margin-right: 1em;
+      }
+      .right-content {
+        display: flex;
+        flex-direction: column;
+
+        .count-container {
+          margin-top: auto;
+          display: flex;
+          justify-content: space-between;
+
+          .toggles {
+            display: flex;
+
+            .add {
+              margin-right: 2em;
+            }
+          }
+        }
       }
     }
   }

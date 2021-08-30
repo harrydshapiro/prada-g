@@ -19,14 +19,15 @@ export default class ProductTile extends Vue {
   @Prop({ required: true }) product!: Product
 
   get isInCart () {
-    return !!store.state.cart.find(product => this.product.id === product.id)
+    // @ts-ignore
+    return !!store.state.cart[this.product.id]
   }
 
   toggleCartInclusion () {
     if (this.isInCart) {
-      store.dispatch.removeFromCart(this.product)
+      store.dispatch.removeFromCart(this.product.id)
     } else {
-      store.dispatch.addToCart(this.product)
+      store.dispatch.addToCart(this.product.id)
     }
   }
 }
@@ -38,6 +39,7 @@ export default class ProductTile extends Vue {
 
   .product-name {
     font-weight: 600;
+    margin-bottom: 1em;
   }
 
   .product-image {

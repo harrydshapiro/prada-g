@@ -1,17 +1,27 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { createDirectStore } from 'direct-vuex'
+import products from '@/products.json'
 
 export interface Product {
   price: number,
   name: string,
-  id: number,
+  id: string,
   image: string,
   'price-explanation': string
 }
 
+export interface CartItem {
+  product: Product,
+  count: number
+}
+
+export interface Cart {
+  [productId: Product['id']]: CartItem
+}
+
 export interface RootState {
-  cart: Product[]
+  cart: Cart
   customerDetails: {
     name: string,
     email: string,
@@ -28,8 +38,7 @@ export interface RootState {
 Vue.use(Vuex)
 
 const state: RootState = {
-  cart: [
-  ],
+  cart: {},
   customerDetails: {
     name: '',
     email: '',
@@ -54,28 +63,38 @@ const {
   modules: {
   },
   mutations: {
-    setCart (state, cart: Product[]) {
+    setCart (state, cart: Cart) {
       state.cart = cart
     }
   },
   actions: {
-    addToCart (context, product: Product) {
+    addToCart (context, productId: Product['id']) {
       const { state, commit } = rootActionContext(context)
-      const cart = state.cart
-      const newCart = Array.from(cart)
-      newCart.push(product)
+      const newCart: Cart = JSON.parse(JSON.stringify(state.cart))
+      if (newCart[productId]) {
+        newCart[productId].count++
+      } else {
+        newCart[productId] = {
+          // @ts-ignore
+          product: products[productId],
+          count: 1
+        }
+      }
       commit.setCart(newCart)
     },
-
-    removeFromCart (context, product: Product) {
+    removeFromCart (context, productId: Product['id']) {
       const { state, commit } = rootActionContext(context)
-      const cart = state.cart
-      const newCart = Array.from(cart).filter(p => p.id !== product.id)
+      const newCart: Cart = JSON.parse(JSON.stringify(state.cart))
+      if (newCart[productId]?.count > 1) {
+        newCart[productId].count--
+      } else {
+        delete newCart[productId]
+      }
       commit.setCart(newCart)
     },
     clearCart (context) {
       const { commit } = rootActionContext(context)
-      commit.setCart([])
+      commit.setCart({})
     }
   },
   getters: {

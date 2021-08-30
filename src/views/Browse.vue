@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import productList from '@/products.json'
+import productList from '@/products'
 import ProductTile from '@/components/ProductTile.vue'
 
 @Component({

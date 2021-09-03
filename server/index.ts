@@ -1,14 +1,16 @@
-const dotenv = require('dotenv')
+/* eslint-disable import/first */
+import dotenv from 'dotenv'
 dotenv.config()
-const express = require('express')
-const serveStatic = require('serve-static')
-const path = require('path')
-const app = express()
-const bodyparser = require('body-parser')
-const sgMail = require('@sendgrid/mail')
-const cors = require('cors')
+import express, { RequestHandler } from 'express'
+import serveStatic from 'serve-static'
+import path from 'path'
+import bodyparser from 'body-parser'
+import sgMail from '@sendgrid/mail'
+import cors from 'cors'
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+const app = express()
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY!)
 
 app.use(bodyparser.json())
 app.use(cors({
@@ -16,7 +18,7 @@ app.use(cors({
 }))
 
 // Force https middleware
-function forceHttps (req, res, next) {
+const forceHttps: RequestHandler = function (req, res, next) {
   if (!req.secure && req.hostname !== 'localhost') {
     res.redirect(`https://${req.hostname}${req.originalUrl}`)
   } else {
@@ -25,7 +27,7 @@ function forceHttps (req, res, next) {
 }
 
 // Force https in staging/prod
-if (['staging', 'production'].includes(process.env.NODE_ENV)) {
+if (['staging', 'production'].includes(process.env.NODE_ENV!)) {
   app.enable('trust proxy') // Since heroku is in front
   app.use(forceHttps)
 }
@@ -36,10 +38,10 @@ app.use(serveStatic(path.join(__dirname, 'dist')))
 app.post('/checkout', (req, res, next) => {
   const purchaseData = req.body
 
-  const itemsInCart = Object.values(purchaseData.cart)
+  const itemsInCart = Object.values(purchaseData.cart) as any[]
   const itemsInCartNames = itemsInCart.map(cartItem => `${cartItem.product.name} x${cartItem.count}`).join(', ')
   const shippingCost = purchaseData.customerDetails['street-one'] ? 5 : 0
-  const totalCost = itemsInCart.reduce((acc, curr) => acc + (curr.product.price * curr.count), 0) + shippingCost
+  const totalCost = itemsInCart.reduce((acc: number, curr) => acc + (curr.product.price * curr.count), 0) + shippingCost
 
   let emailText = `Hey ${purchaseData.customerDetails['customer-name']}!`
   emailText += `\n\nYou ordered the following items: ${itemsInCartNames}.`

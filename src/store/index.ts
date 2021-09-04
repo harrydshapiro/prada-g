@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { createDirectStore } from 'direct-vuex'
 import products from '@/products'
+import Analytics from '@/analytics'
 
 export interface Product {
   price: number,
@@ -80,6 +81,9 @@ const {
         }
       }
       commit.setCart(newCart)
+      Analytics.sendAnalyticsEvent('addToCart', {
+        eventLabel: productId
+      })
     },
     removeFromCart (context, productId: Product['id']) {
       const { state, commit } = rootActionContext(context)
@@ -90,6 +94,9 @@ const {
         delete newCart[productId]
       }
       commit.setCart(newCart)
+      Analytics.sendAnalyticsEvent('removeFromCart', {
+        eventLabel: productId
+      })
     },
     clearCart (context) {
       const { commit } = rootActionContext(context)

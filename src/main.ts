@@ -2,11 +2,11 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import { initAnalytics } from '@/analytics'
+import Analytics from '@/analytics'
 
-if (['production', 'staging'].includes(process.env.NODE_ENV!)) {
-  initAnalytics()
-}
+// if (['production', 'staging'].includes(process.env.NODE_ENV!)) {
+Analytics.initializeAndIdentify()
+// }
 
 Vue.config.productionTip = false
 

@@ -72,6 +72,7 @@
 import { Vue, Component } from 'vue-property-decorator'
 import store, { CartItem } from '@/store'
 import axios from 'axios'
+import Analytics from '@/analytics'
 
 @Component({})
 export default class Checkout extends Vue {
@@ -133,6 +134,7 @@ export default class Checkout extends Vue {
           customerDetails,
           cart: store.state.cart
         })
+        Analytics.sendAnalyticsEvent('successful_purchase')
         store.dispatch.clearCart()
         this.$router.push('/confirmation')
       } catch (err) {
@@ -140,6 +142,8 @@ export default class Checkout extends Vue {
         console.error(err)
         // if theres an error ask them to just hmu about it
       }
+    } else {
+      Analytics.sendAnalyticsEvent('invalid_cart_setup')
     }
   }
 }

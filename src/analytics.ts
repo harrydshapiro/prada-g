@@ -33,7 +33,7 @@ class AnalyticsManager {
   private initializeUserId () {
     let userId = window.localStorage.getItem('userId')
     if (!userId) {
-      userId = `${Math.random()}`.split('.')[0]
+      userId = `${Math.random()}`.split('.')[1]
       window.localStorage.setItem('userId', userId)
     }
     this.userId = userId

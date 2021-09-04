@@ -134,7 +134,10 @@ export default class Checkout extends Vue {
           customerDetails,
           cart: store.state.cart
         })
-        Analytics.sendAnalyticsEvent('successful_purchase')
+        Analytics.sendAnalyticsEvent('successful_purchase', {
+          cart: store.state.cart,
+          customerDetails
+        })
         store.dispatch.clearCart()
         this.$router.push('/confirmation')
       } catch (err) {

@@ -39,15 +39,11 @@ class AnalyticsManager {
     this.userId = userId
   }
 
-  sendAnalyticsEvent (eventName: string, options: {
-    eventCategory?: string,
-    eventAction?: string,
-    eventLabel?: string
-  } = {}) {
-    if (window.ga) {
-      const ga = window.ga
-      ga('send', Object.assign(options, { hitType: 'event' }))
-    }
+  sendAnalyticsEvent (eventName: string, payload: Record<string, any> = {}) {
+    window.dataLayer.push({
+      ...payload,
+      event: eventName
+    })
 
     LogRocket.track(eventName)
   }

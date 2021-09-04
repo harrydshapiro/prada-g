@@ -82,7 +82,7 @@ const {
       }
       commit.setCart(newCart)
       Analytics.sendAnalyticsEvent('addToCart', {
-        eventLabel: productId
+        cart: newCart
       })
     },
     removeFromCart (context, productId: Product['id']) {
@@ -95,7 +95,7 @@ const {
       }
       commit.setCart(newCart)
       Analytics.sendAnalyticsEvent('removeFromCart', {
-        eventLabel: productId
+        cart: newCart
       })
     },
     clearCart (context) {
